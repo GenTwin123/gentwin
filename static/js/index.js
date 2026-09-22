@@ -66,6 +66,12 @@ var newControlPointTasks = [
     { id: "zebra", label: "Zebra" }
 ];
 
+var dataGenerationTasks = [
+    { id: "duster_case09_gen", label: "Duster + Case 09" },
+    { id: "card_drawer11_gen", label: "Card + Drawer 11" },
+    { id: "zebra_case08_gen", label: "Zebra + Case 08" }
+];
+
 function emptyState(message) {
     var el = document.createElement("div");
     el.className = "empty-state";
@@ -386,6 +392,63 @@ function buildDownstreamCarousel() {
     activateDownstreamSlide(root);
 }
 
+function createGenerationCard(label, filename) {
+    var card = document.createElement("article");
+    card.className = "video-card comparison-card downstream-card ours-card";
+
+    var header = document.createElement("div");
+    header.className = "comparison-method-header";
+    header.textContent = label;
+    card.appendChild(header);
+    card.appendChild(createVideoElement("static/videos/applications/data_generation/" + filename));
+    return card;
+}
+
+function buildDataGenerationCarousel() {
+    var root = document.getElementById("data-generation-carousel");
+    if (!root) { return; }
+    var track = root.querySelector(".downstream-track");
+    var dots = root.querySelector(".downstream-dots");
+    root._index = 0;
+
+    dataGenerationTasks.forEach(function (task, index) {
+        var slide = document.createElement("section");
+        slide.className = "downstream-slide";
+
+        var title = document.createElement("h4");
+        title.className = "downstream-task-title";
+        title.textContent = task.label;
+        slide.appendChild(title);
+
+        var pair = document.createElement("div");
+        pair.className = "downstream-pair";
+        pair.appendChild(createGenerationCard("Generation 01", task.id + "_01.mp4"));
+        pair.appendChild(createGenerationCard("Generation 02", task.id + "_02.mp4"));
+        slide.appendChild(pair);
+        track.appendChild(slide);
+
+        var dot = document.createElement("button");
+        dot.type = "button";
+        dot.className = "carousel-dot" + (index === 0 ? " active" : "");
+        dot.setAttribute("aria-label", "Show " + task.label);
+        dot.addEventListener("click", function () {
+            root._index = index;
+            activateDownstreamSlide(root);
+        });
+        dots.appendChild(dot);
+    });
+
+    root.querySelector(".downstream-prev").addEventListener("click", function () {
+        root._index = (root._index - 1 + dataGenerationTasks.length) % dataGenerationTasks.length;
+        activateDownstreamSlide(root);
+    });
+    root.querySelector(".downstream-next").addEventListener("click", function () {
+        root._index = (root._index + 1) % dataGenerationTasks.length;
+        activateDownstreamSlide(root);
+    });
+    activateDownstreamSlide(root);
+}
+
 function observeVideos(root) {
     var scope = root || document;
     var videos = scope.querySelectorAll("video[data-src]");
@@ -438,12 +501,83 @@ function setupReveal() {
     elements.forEach(function (element) { observer.observe(element); });
 }
 
+function setupPointerAura() {
+    var aura = document.querySelector(".pointer-aura");
+    if (!aura || !window.matchMedia ||
+        !window.matchMedia("(hover: hover) and (pointer: fine)").matches ||
+        window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        return;
+    }
+
+    var x = -300;
+    var y = -300;
+    var scheduled = false;
+
+    function paint() {
+        aura.style.transform = "translate3d(" + (x - 120) + "px, " + (y - 120) + "px, 0)";
+        scheduled = false;
+    }
+
+    document.addEventListener("pointermove", function (event) {
+        x = event.clientX;
+        y = event.clientY;
+        aura.classList.add("is-visible");
+        if (!scheduled) {
+            scheduled = true;
+            window.requestAnimationFrame(paint);
+        }
+    }, { passive: true });
+
+    document.addEventListener("pointerleave", function () {
+        aura.classList.remove("is-visible");
+    });
+}
+
+function setupNavigationFeedback() {
+    var progress = document.querySelector(".scroll-progress span");
+    var links = Array.prototype.slice.call(document.querySelectorAll(".nav-links a[href^='#']"));
+    var sections = links.map(function (link) {
+        return document.querySelector(link.getAttribute("href"));
+    }).filter(Boolean);
+    var scheduled = false;
+
+    function update() {
+        var scrollable = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+        var ratio = Math.min(1, Math.max(0, window.scrollY / scrollable));
+        if (progress) { progress.style.transform = "scaleX(" + ratio + ")"; }
+
+        var marker = window.scrollY + Math.min(window.innerHeight * 0.32, 240);
+        var active = sections[0];
+        sections.forEach(function (section) {
+            if (section.offsetTop <= marker) { active = section; }
+        });
+        links.forEach(function (link) {
+            link.classList.toggle("is-active", active && link.getAttribute("href") === "#" + active.id);
+        });
+        scheduled = false;
+    }
+
+    function requestUpdate() {
+        if (!scheduled) {
+            scheduled = true;
+            window.requestAnimationFrame(update);
+        }
+    }
+
+    window.addEventListener("scroll", requestUpdate, { passive: true });
+    window.addEventListener("resize", requestUpdate, { passive: true });
+    update();
+}
+
 function init() {
     buildAppCarousels();
     initResultBrowser();
     buildDownstreamCarousel();
+    buildDataGenerationCarousel();
     observeVideos();
     setupReveal();
+    setupPointerAura();
+    setupNavigationFeedback();
 }
 
 window.addEventListener("resize", function () {
