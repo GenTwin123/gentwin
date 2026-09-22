@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+# Add a Sitemap entry after the final public URL is available.

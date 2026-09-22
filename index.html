@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="data:,">
+    <title>Project Title</title>
+    <meta name="description" content="Add a short project description.">
+
+    <!-- Replace these placeholders after the public project URL is available. -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Project Title">
+    <meta property="og:description" content="Add a short project description.">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Project Title">
+    <meta name="twitter:description" content="Add a short project description.">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans">
+    <link rel="stylesheet" href="static/css/index.css">
+    <script defer src="static/js/index.js"></script>
+</head>
+<body>
+
+<!-- ============================== STICKY NAVIGATION ============================== -->
+<nav class="sticky-nav" aria-label="Section navigation">
+    <div class="nav-inner">
+        <a class="nav-brand" href="#top">Project Name</a>
+        <div class="nav-links">
+            <a href="#overview">Overview</a>
+            <a href="#abstract">Abstract</a>
+            <a href="#method">Method</a>
+            <a href="#results">Results</a>
+            <a href="#applications">Applications</a>
+        </div>
+    </div>
+</nav>
+
+<!-- ============================== HERO ============================== -->
+<header class="hero-section" id="top">
+    <div class="hero-glow hero-glow-blue" aria-hidden="true"></div>
+    <div class="hero-glow hero-glow-cyan" aria-hidden="true"></div>
+    <div class="hero-glow hero-glow-violet" aria-hidden="true"></div>
+    <div class="hero-content">
+        <h1 class="publication-title">
+            <span class="title-main">Project Name</span>
+            <span class="title-subtitle">Project Subtitle</span>
+        </h1>
+        <p class="hero-authors">Author Names</p>
+        <p class="hero-affiliations">Affiliations</p>
+        <div class="project-links" aria-label="Project resources">
+            <a class="project-link is-disabled" href="#" aria-disabled="true">Paper</a>
+            <a class="project-link is-disabled" href="#" aria-disabled="true">Code</a>
+            <a class="project-link is-disabled" href="#" aria-disabled="true">Video</a>
+        </div>
+    </div>
+</header>
+
+<!-- ============================== OVERVIEW ============================== -->
+<section class="page-section section-overview" id="overview">
+    <div class="container-narrow">
+        <h2 class="section-title reveal">Overview</h2>
+        <div class="media-placeholder reveal" role="img" aria-label="Overview figure placeholder">
+            <span>Overview figure or teaser video</span>
+            <small>Place the asset in static/images or static/videos, then replace this block.</small>
+        </div>
+        <p class="lead-text reveal">Add a concise overview of the project and its main contribution.</p>
+    </div>
+</section>
+
+<!-- ============================== ABSTRACT ============================== -->
+<section class="page-section section-abstract" id="abstract">
+    <div class="container-abstract">
+        <h2 class="section-title reveal">Abstract</h2>
+        <p class="body-text reveal">Add the project abstract here.</p>
+    </div>
+</section>
+
+<!-- ============================== METHOD ============================== -->
+<section class="page-section section-method" id="method">
+    <div class="container-narrow">
+        <h2 class="section-title reveal">Method</h2>
+        <div class="media-placeholder reveal" role="img" aria-label="Method figure placeholder">
+            <span>Method figure</span>
+            <small>Replace this block with the final pipeline image.</small>
+        </div>
+        <p class="lead-text reveal">Add a short description of the method.</p>
+    </div>
+</section>
+
+<!-- ============================== RESULTS ============================== -->
+<section class="page-section section-results" id="results">
+    <div class="container-wide">
+        <h2 class="section-title reveal">Results</h2>
+        <div class="results-sublinks reveal">
+            <a href="#qualitative">Qualitative Results</a>
+            <a href="#comparisons">Comparison with Baselines</a>
+        </div>
+
+        <div class="results-subsection" id="qualitative">
+            <h3 class="subsection-title reveal">Qualitative Results</h3>
+            <p class="subsection-text reveal">Add qualitative result videos in <code>static/js/index.js</code>.</p>
+            <div class="video-grid reveal" id="qualitative-grid"></div>
+        </div>
+
+        <div class="results-subsection" id="comparisons">
+            <h3 class="subsection-title reveal">Comparison with Baselines</h3>
+            <p class="subsection-text reveal">Add comparison methods, directories, and scenes in <code>static/js/index.js</code>.</p>
+            <div class="scene-selector reveal" id="comparison-controls">
+                <label class="scene-selector-label" for="comparison-scene-select">Select Scene</label>
+                <select id="comparison-scene-select" aria-label="Select comparison scene"></select>
+            </div>
+            <h4 class="scene-current reveal" id="comparison-scene-title"></h4>
+            <div class="comparison-grid reveal" id="comparison-grid"></div>
+        </div>
+    </div>
+</section>
+
+<!-- ============================== APPLICATIONS ============================== -->
+<section class="page-section section-applications" id="applications">
+    <div class="container-narrow">
+        <h2 class="section-title reveal">Applications</h2>
+
+        <div class="results-subsection">
+            <h3 class="subsection-title reveal">Application 1</h3>
+            <div class="app-carousel reveal" id="carousel-application-1">
+                <div class="carousel-row">
+                    <button class="carousel-btn carousel-prev" type="button" aria-label="Previous videos">&#10094;</button>
+                    <div class="carousel-viewport"><div class="carousel-track"></div></div>
+                    <button class="carousel-btn carousel-next" type="button" aria-label="Next videos">&#10095;</button>
+                </div>
+                <div class="carousel-dots"></div>
+            </div>
+        </div>
+
+        <div class="results-subsection">
+            <h3 class="subsection-title reveal">Application 2</h3>
+            <div class="app-carousel reveal" id="carousel-application-2">
+                <div class="carousel-row">
+                    <button class="carousel-btn carousel-prev" type="button" aria-label="Previous videos">&#10094;</button>
+                    <div class="carousel-viewport"><div class="carousel-track"></div></div>
+                    <button class="carousel-btn carousel-next" type="button" aria-label="Next videos">&#10095;</button>
+                </div>
+                <div class="carousel-dots"></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Add ablation, unseen-interaction, supplementary, and BibTeX sections here. -->
+
+<!-- ============================== FOOTER ============================== -->
+<footer class="site-footer">
+    <p>
+        Website structure adapted from
+        <a href="https://github.com/PhysReal/anonymous_web" target="_blank" rel="noopener">PhysReal</a>
+        and
+        <a href="https://github.com/nerfies/nerfies.github.io" target="_blank" rel="noopener">Nerfies</a>.
+    </p>
+</footer>
+
+</body>
+</html>
