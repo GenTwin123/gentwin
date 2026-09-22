@@ -60,8 +60,8 @@ var resultCategories = {
 var activeResultCategory = "deformable";
 
 var newControlPointTasks = [
-    { id: "card", label: "Card Holder" },
-    { id: "duster", label: "Feather Duster" },
+    { id: "card", label: "Card" },
+    { id: "duster", label: "Duster" },
     { id: "flag03", label: "Flag" },
     { id: "zebra", label: "Zebra" }
 ];
