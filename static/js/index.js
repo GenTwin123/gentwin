@@ -1,12 +1,4 @@
-/* Clean academic project-page template.
-   Add project media only in the configuration blocks below. */
-
-/* Example:
-var qualitativeVideos = [
-    { src: "static/videos/qualitative/example.mp4", caption: "Example result" }
-];
-*/
-var qualitativeVideos = [];
+/* GenTwin academic project page. */
 
 /* Add one entry per application section already declared in index.html. */
 var applicationSections = [
@@ -14,21 +6,65 @@ var applicationSections = [
     { id: "application-2", dir: "static/videos/applications/application-2/", videos: [] }
 ];
 
-/* Example:
-var comparisonMethodOrder = [
-    { key: "gt", label: "Ground Truth", isOurs: false },
-    { key: "ours", label: "Ours", isOurs: true }
-];
-var comparisonDirs = {
-    gt: "static/videos/comparisons/ground-truth/",
-    ours: "static/videos/comparisons/ours/"
+var resultCategories = {
+    deformable: {
+        label: "Deformable",
+        description: "Multi-part deformable objects from the PhysTwin benchmark.",
+        scenes: [
+            "double_lift_sloth", "double_stretch_sloth", "single_lift_sloth",
+            "single_push_sloth", "double_lift_zebra", "double_stretch_zebra",
+            "single_lift_zebra"
+        ],
+        methods: [
+            { label: "Observation", base: "static/videos/results/observation/deformable/", single: true },
+            { label: "GS-Dynamics", base: "static/videos/results/gs_dynamics/deformable/", single: true },
+            { label: "Spring-Gaus", base: "static/videos/results/spring_gaus/deformable/", single: true },
+            { label: "PhysTwin", base: "static/videos/results/phystwin/deformable/" },
+            { label: "GenTwin", base: "static/videos/results/gentwin/deformable/", isOurs: true }
+        ]
+    },
+    articulated: {
+        label: "Articulated",
+        description: "Self-captured drawers and folding cases with constrained rigid-part motion.",
+        scenes: [
+            "double_close_drawer_10", "double_close_drawer_11", "single_fold_case_03",
+            "single_fold_case_08", "single_fold_case_09"
+        ],
+        methods: [
+            { label: "Observation", base: "static/videos/results/observation/articulated/", single: true },
+            { label: "GS-Dynamics", base: "static/videos/results/gs_dynamics/articulated/", single: true },
+            { label: "Spring-Gaus", base: "static/videos/results/spring_gaus/articulated/", single: true },
+            { label: "ArtGS", base: "static/videos/results/artgs/articulated/" },
+            { label: "GaussianArt", base: "static/videos/results/gaussianart/articulated/" },
+            { label: "PhysTwin", base: "static/videos/results/phystwin/articulated/" },
+            { label: "GenTwin", base: "static/videos/results/gentwin/articulated/", isOurs: true }
+        ]
+    },
+    hybrid: {
+        label: "Hybrid",
+        description: "Self-captured objects combining rigid components with flexible or deformable parts.",
+        scenes: [
+            "double_lift_card_01", "single_lift_card_05", "single_lift_flag_03",
+            "single_lift_flag_05", "single_push_duster_03", "single_push_broom_01"
+        ],
+        methods: [
+            { label: "Observation", base: "static/videos/results/observation/hybrid/", single: true },
+            { label: "GS-Dynamics", base: "static/videos/results/gs_dynamics/hybrid/", single: true },
+            { label: "Spring-Gaus", base: "static/videos/results/spring_gaus/hybrid/", single: true },
+            { label: "PhysTwin", base: "static/videos/results/phystwin/hybrid/" },
+            { label: "GenTwin", base: "static/videos/results/gentwin/hybrid/", isOurs: true }
+        ]
+    }
 };
-var comparisonScenes = ["scene_01"];
-*/
-var comparisonMethodOrder = [];
-var comparisonDirs = {};
-var comparisonScenes = [];
-var comparisonPathOverrides = {};
+
+var activeResultCategory = "deformable";
+
+var newControlPointTasks = [
+    { id: "card", label: "Card Holder" },
+    { id: "duster", label: "Feather Duster" },
+    { id: "flag03", label: "Flag" },
+    { id: "zebra", label: "Zebra" }
+];
 
 function emptyState(message) {
     var el = document.createElement("div");
@@ -63,20 +99,6 @@ function createVideoCard(src, caption) {
     label.textContent = caption || stripExtension(src.split("/").pop());
     card.appendChild(label);
     return card;
-}
-
-function renderQualitative() {
-    var grid = document.getElementById("qualitative-grid");
-    if (!grid) { return; }
-    if (!qualitativeVideos.length) {
-        grid.appendChild(emptyState("Qualitative videos will appear here."));
-        return;
-    }
-    qualitativeVideos.forEach(function (item) {
-        var src = typeof item === "string" ? item : item.src;
-        var caption = typeof item === "string" ? stripExtension(item.split("/").pop()) : item.caption;
-        grid.appendChild(createVideoCard(src, caption));
-    });
 }
 
 function appCarouselPerPage() {
@@ -181,75 +203,192 @@ function buildAppCarousels() {
     });
 }
 
-function comparisonVideoPath(sceneId, methodKey) {
-    var overrides = comparisonPathOverrides[sceneId];
-    if (overrides && overrides[methodKey]) { return overrides[methodKey]; }
-    return comparisonDirs[methodKey] + sceneId + ".mp4";
+function formatSceneName(sceneId) {
+    return sceneId.split("_").map(function (word) {
+        return word.charAt(0).toUpperCase() + word.slice(1);
+    }).join(" ");
 }
 
-var comparisonCards = [];
+function resultVideoPath(method, sceneId) {
+    if (method.single) { return method.base + sceneId + ".mp4"; }
+    return method.base + sceneId + "/0.mp4";
+}
 
-function buildComparisonGrid() {
-    var grid = document.getElementById("comparison-grid");
-    var controls = document.getElementById("comparison-controls");
-    if (!grid) { return; }
-    if (!comparisonMethodOrder.length || !comparisonScenes.length) {
-        grid.appendChild(emptyState("Baseline comparison videos will appear here."));
-        if (controls) { controls.hidden = true; }
-        return;
+function renderCategoryTabs() {
+    var root = document.getElementById("result-category-tabs");
+    if (!root) { return; }
+    Array.prototype.forEach.call(root.querySelectorAll("[data-category]"), function (button) {
+        var key = button.dataset.category;
+        button.classList.toggle("active", key === activeResultCategory);
+        if (!button.dataset.bound) {
+            button.dataset.bound = "true";
+            button.addEventListener("click", function () {
+                activeResultCategory = key;
+                renderCategoryTabs();
+                populateSceneSelect();
+                renderSelectedScene();
+            });
+        }
+    });
+}
+
+function createComparisonCard(method, sceneId) {
+    var card = document.createElement("article");
+    card.className = "video-card comparison-card" + (method.isOurs ? " ours-card" : "");
+
+    var header = document.createElement("div");
+    header.className = "comparison-method-header";
+    header.appendChild(document.createTextNode(method.label));
+    if (method.isOurs) {
+        var badge = document.createElement("span");
+        badge.className = "ours-badge";
+        badge.textContent = "Ours";
+        header.appendChild(badge);
     }
+    card.appendChild(header);
 
-    comparisonMethodOrder.forEach(function (method) {
-        var card = document.createElement("div");
-        card.className = "video-card comparison-card" + (method.isOurs ? " ours-card" : "");
-        var header = document.createElement("div");
-        header.className = "comparison-method-header";
-        header.textContent = method.label;
-        if (method.isOurs) {
-            var badge = document.createElement("span");
-            badge.className = "ours-badge";
-            badge.textContent = "Ours";
-            header.appendChild(badge);
-        }
-        card.appendChild(header);
-        var video = createVideoElement("");
-        card.appendChild(video);
-        grid.appendChild(card);
-        comparisonCards.push({ key: method.key, video: video });
-    });
+    var video = createVideoElement(resultVideoPath(method, sceneId));
+    video.addEventListener("error", function () { card.classList.add("video-unavailable"); });
+    card.appendChild(video);
+    return card;
 }
 
-function applyComparisonScene(sceneId) {
-    comparisonCards.forEach(function (entry) {
-        var src = comparisonVideoPath(sceneId, entry.key);
-        entry.video.pause();
-        entry.video.dataset.src = src;
-        entry.video.src = src;
-        entry.video.load();
-        var playPromise = entry.video.play();
-        if (playPromise && typeof playPromise.catch === "function") {
-            playPromise.catch(function () {});
-        }
-    });
-    var title = document.getElementById("comparison-scene-title");
-    if (title) { title.textContent = sceneId; }
-}
-
-function renderSceneSelect() {
+function populateSceneSelect() {
     var select = document.getElementById("comparison-scene-select");
-    if (!select || !comparisonScenes.length) { return; }
-    comparisonScenes.forEach(function (sceneId) {
+    if (!select) { return; }
+    var category = resultCategories[activeResultCategory];
+    select.innerHTML = "";
+    category.scenes.forEach(function (sceneId) {
         var option = document.createElement("option");
         option.value = sceneId;
-        option.textContent = sceneId;
+        option.textContent = formatSceneName(sceneId);
         select.appendChild(option);
     });
-    select.addEventListener("change", function () { applyComparisonScene(this.value); });
-    applyComparisonScene(comparisonScenes[0]);
 }
 
-function observeVideos() {
-    var videos = document.querySelectorAll("video[data-src]");
+function renderSelectedScene() {
+    var grid = document.getElementById("comparison-grid");
+    var select = document.getElementById("comparison-scene-select");
+    if (!grid || !select) { return; }
+    var category = resultCategories[activeResultCategory];
+    var sceneId = select.value || category.scenes[0];
+    grid.innerHTML = "";
+
+    var description = document.getElementById("comparison-category-description");
+    if (description) { description.textContent = category.description + " Results are shown from camera view 1."; }
+
+    var title = document.getElementById("comparison-scene-title");
+    if (title) { title.textContent = formatSceneName(sceneId); }
+
+    category.methods.forEach(function (method) {
+        grid.appendChild(createComparisonCard(method, sceneId));
+    });
+
+    observeVideos(grid);
+}
+
+function initResultBrowser() {
+    var select = document.getElementById("comparison-scene-select");
+    if (!select) { return; }
+    select.addEventListener("change", renderSelectedScene);
+    renderCategoryTabs();
+    populateSceneSelect();
+    renderSelectedScene();
+}
+
+function createDownstreamCard(method, filename, isOurs) {
+    var card = document.createElement("article");
+    card.className = "video-card comparison-card downstream-card" + (isOurs ? " ours-card" : "");
+
+    var header = document.createElement("div");
+    header.className = "comparison-method-header";
+    header.appendChild(document.createTextNode(method));
+    if (isOurs) {
+        var badge = document.createElement("span");
+        badge.className = "ours-badge";
+        badge.textContent = "Ours";
+        header.appendChild(badge);
+    }
+    card.appendChild(header);
+    card.appendChild(createVideoElement("static/videos/applications/new_control_point/" + filename));
+    return card;
+}
+
+function activateDownstreamSlide(root) {
+    var slides = root.querySelectorAll(".downstream-slide");
+    var track = root.querySelector(".downstream-track");
+    track.style.transform = "translateX(-" + (root._index * 100) + "%)";
+
+    Array.prototype.forEach.call(slides, function (slide, index) {
+        Array.prototype.forEach.call(slide.querySelectorAll("video"), function (video) {
+            if (index === root._index) {
+                if (!video.getAttribute("src") && video.dataset.src) {
+                    video.src = video.dataset.src;
+                    video.load();
+                }
+                var playPromise = video.play();
+                if (playPromise && typeof playPromise.catch === "function") {
+                    playPromise.catch(function () {});
+                }
+            } else {
+                video.pause();
+            }
+        });
+    });
+
+    Array.prototype.forEach.call(root.querySelectorAll(".carousel-dot"), function (dot, index) {
+        dot.classList.toggle("active", index === root._index);
+    });
+}
+
+function buildDownstreamCarousel() {
+    var root = document.getElementById("new-control-carousel");
+    if (!root) { return; }
+    var track = root.querySelector(".downstream-track");
+    var dots = root.querySelector(".downstream-dots");
+    root._index = 0;
+
+    newControlPointTasks.forEach(function (task, index) {
+        var slide = document.createElement("section");
+        slide.className = "downstream-slide";
+
+        var title = document.createElement("h4");
+        title.className = "downstream-task-title";
+        title.textContent = task.label;
+        slide.appendChild(title);
+
+        var pair = document.createElement("div");
+        pair.className = "downstream-pair";
+        pair.appendChild(createDownstreamCard("PhysTwin", "Phystwin_" + task.id + ".mp4", false));
+        pair.appendChild(createDownstreamCard("GenTwin", "Gentwin_" + task.id + ".mp4", true));
+        slide.appendChild(pair);
+        track.appendChild(slide);
+
+        var dot = document.createElement("button");
+        dot.type = "button";
+        dot.className = "carousel-dot" + (index === 0 ? " active" : "");
+        dot.setAttribute("aria-label", "Show " + task.label);
+        dot.addEventListener("click", function () {
+            root._index = index;
+            activateDownstreamSlide(root);
+        });
+        dots.appendChild(dot);
+    });
+
+    root.querySelector(".downstream-prev").addEventListener("click", function () {
+        root._index = (root._index - 1 + newControlPointTasks.length) % newControlPointTasks.length;
+        activateDownstreamSlide(root);
+    });
+    root.querySelector(".downstream-next").addEventListener("click", function () {
+        root._index = (root._index + 1) % newControlPointTasks.length;
+        activateDownstreamSlide(root);
+    });
+    activateDownstreamSlide(root);
+}
+
+function observeVideos(root) {
+    var scope = root || document;
+    var videos = scope.querySelectorAll("video[data-src]");
     if (!("IntersectionObserver" in window)) {
         videos.forEach(function (video) {
             if (!video.getAttribute("src") && video.dataset.src) { video.src = video.dataset.src; }
@@ -273,7 +412,12 @@ function observeVideos() {
             }
         });
     }, { rootMargin: "240px 0px", threshold: 0.05 });
-    videos.forEach(function (video) { observer.observe(video); });
+    videos.forEach(function (video) {
+        if (!video.dataset.observerBound) {
+            video.dataset.observerBound = "true";
+            observer.observe(video);
+        }
+    });
 }
 
 function setupReveal() {
@@ -295,10 +439,9 @@ function setupReveal() {
 }
 
 function init() {
-    renderQualitative();
     buildAppCarousels();
-    buildComparisonGrid();
-    renderSceneSelect();
+    initResultBrowser();
+    buildDownstreamCarousel();
     observeVideos();
     setupReveal();
 }

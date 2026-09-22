@@ -4,16 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="icon" href="data:,">
-    <title>Project Title</title>
-    <meta name="description" content="Add a short project description.">
+    <title>GenTwin: Part-Aware Generalized Dynamics Modeling with Neural Anisotropic Springs</title>
+    <meta name="description" content="GenTwin models deformable, articulated, and hybrid object dynamics within a unified part-aware spring-mass representation.">
 
-    <!-- Replace these placeholders after the public project URL is available. -->
     <meta property="og:type" content="website">
-    <meta property="og:title" content="Project Title">
-    <meta property="og:description" content="Add a short project description.">
+    <meta property="og:title" content="GenTwin: Part-Aware Generalized Dynamics Modeling with Neural Anisotropic Springs">
+    <meta property="og:description" content="A unified part-aware framework for deformable, articulated, and hybrid object dynamics.">
+    <meta property="og:image" content="static/images/Figure1.png">
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Project Title">
-    <meta name="twitter:description" content="Add a short project description.">
+    <meta name="twitter:title" content="GenTwin: Part-Aware Generalized Dynamics Modeling with Neural Anisotropic Springs">
+    <meta name="twitter:description" content="A unified part-aware framework for deformable, articulated, and hybrid object dynamics.">
+    <meta name="twitter:image" content="static/images/Figure1.png">
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css">
@@ -26,7 +27,7 @@
 <!-- ============================== STICKY NAVIGATION ============================== -->
 <nav class="sticky-nav" aria-label="Section navigation">
     <div class="nav-inner">
-        <a class="nav-brand" href="#top">Project Name</a>
+        <a class="nav-brand" href="#top">GenTwin</a>
         <div class="nav-links">
             <a href="#overview">Overview</a>
             <a href="#abstract">Abstract</a>
@@ -44,16 +45,10 @@
     <div class="hero-glow hero-glow-violet" aria-hidden="true"></div>
     <div class="hero-content">
         <h1 class="publication-title">
-            <span class="title-main">Project Name</span>
-            <span class="title-subtitle">Project Subtitle</span>
+            <span class="title-main">GenTwin</span>
+            <span class="title-subtitle">Part-Aware Generalized Dynamics Modeling with Neural Anisotropic Springs</span>
         </h1>
-        <p class="hero-authors">Author Names</p>
-        <p class="hero-affiliations">Affiliations</p>
-        <div class="project-links" aria-label="Project resources">
-            <a class="project-link is-disabled" href="#" aria-disabled="true">Paper</a>
-            <a class="project-link is-disabled" href="#" aria-disabled="true">Code</a>
-            <a class="project-link is-disabled" href="#" aria-disabled="true">Video</a>
-        </div>
+        <p class="hero-authors">Anonymous Authors</p>
     </div>
 </header>
 
@@ -61,11 +56,13 @@
 <section class="page-section section-overview" id="overview">
     <div class="container-narrow">
         <h2 class="section-title reveal">Overview</h2>
-        <div class="media-placeholder reveal" role="img" aria-label="Overview figure placeholder">
-            <span>Overview figure or teaser video</span>
-            <small>Place the asset in static/images or static/videos, then replace this block.</small>
-        </div>
-        <p class="lead-text reveal">Add a concise overview of the project and its main contribution.</p>
+        <figure class="figure-card project-figure reveal">
+            <img src="static/images/Figure1.png" alt="Overview of GenTwin's part-level adaptation, anisotropic spring modeling, and generalized dynamics results.">
+            <figcaption>
+                <strong>GenTwin for generalized dynamics modeling.</strong>
+                GenTwin adapts intra-part spring configurations using material and motion cues, and models inter-part directional compliance with neural anisotropic springs. A single physical representation supports deformable, articulated, and hybrid objects.
+            </figcaption>
+        </figure>
     </div>
 </section>
 
@@ -73,7 +70,9 @@
 <section class="page-section section-abstract" id="abstract">
     <div class="container-abstract">
         <h2 class="section-title reveal">Abstract</h2>
-        <p class="body-text reveal">Add the project abstract here.</p>
+        <p class="body-text reveal">
+            Physically realistic digital twins are important for modeling and interacting with the physical world. Existing methods typically rely on category-specific formulations, limiting generalization across object categories. We introduce <strong>GenTwin</strong>, a part-aware framework that models generalized dynamics from real-world interaction observations within a common spring-mass representation. For intra-part dynamics, a Part-Adaptive Spring Configuration adapts stiffness and topology to heterogeneous part rigidity using material priors and motion-derived cues. For inter-part dynamics, Neural Anisotropic Spring Connections use part-pair Neural Oriented Stiffness Fields to parameterize continuous direction-dependent stiffness, capturing relative motions from flexible coupling to constrained articulation. Experiments on 18 real-world scenarios spanning deformable, articulated, and hybrid objects demonstrate consistently improved geometric accuracy across object categories.
+        </p>
     </div>
 </section>
 
@@ -81,11 +80,13 @@
 <section class="page-section section-method" id="method">
     <div class="container-narrow">
         <h2 class="section-title reveal">Method</h2>
-        <div class="media-placeholder reveal" role="img" aria-label="Method figure placeholder">
-            <span>Method figure</span>
-            <small>Replace this block with the final pipeline image.</small>
-        </div>
-        <p class="lead-text reveal">Add a short description of the method.</p>
+        <figure class="figure-card project-figure reveal">
+            <img src="static/images/pipeline.png" alt="The GenTwin pipeline from multi-view interaction videos to part-aware spring construction and physics optimization.">
+            <figcaption>
+                <strong>Overview of the GenTwin pipeline.</strong>
+                Multi-view interaction videos provide initial geometry and lifted 3D tracks. Material priors and motion-derived rigidity configure intra-part springs, while a Neural Oriented Stiffness Field predicts direction-dependent stiffness for inter-part connections. The resulting spring-mass model is fitted through zero-order search followed by differentiable refinement.
+            </figcaption>
+        </figure>
     </div>
 </section>
 
@@ -93,62 +94,60 @@
 <section class="page-section section-results" id="results">
     <div class="container-wide">
         <h2 class="section-title reveal">Results</h2>
-        <div class="results-sublinks reveal">
-            <a href="#qualitative">Qualitative Results</a>
-            <a href="#comparisons">Comparison with Baselines</a>
-        </div>
-
-        <div class="results-subsection" id="qualitative">
-            <h3 class="subsection-title reveal">Qualitative Results</h3>
-            <p class="subsection-text reveal">Add qualitative result videos in <code>static/js/index.js</code>.</p>
-            <div class="video-grid reveal" id="qualitative-grid"></div>
-        </div>
-
         <div class="results-subsection" id="comparisons">
-            <h3 class="subsection-title reveal">Comparison with Baselines</h3>
-            <p class="subsection-text reveal">Add comparison methods, directories, and scenes in <code>static/js/index.js</code>.</p>
-            <div class="scene-selector reveal" id="comparison-controls">
-                <label class="scene-selector-label" for="comparison-scene-select">Select Scene</label>
-                <select id="comparison-scene-select" aria-label="Select comparison scene"></select>
+            <h3 class="subsection-title reveal">Dynamics Modeling Across Object Categories</h3>
+            <p class="subsection-text results-intro reveal">
+                Select an object category and interaction scenario to compare GenTwin with the applicable baselines in camera view 1. Observation videos provide the captured reference motion.
+            </p>
+
+            <div class="result-browser reveal">
+                <div class="category-tabs" id="result-category-tabs" aria-label="Object category">
+                    <button class="result-tab active" type="button" data-category="deformable">Deformable</button>
+                    <button class="result-tab" type="button" data-category="articulated">Articulated</button>
+                    <button class="result-tab" type="button" data-category="hybrid">Hybrid</button>
+                </div>
+                <div class="result-toolbar">
+                    <div class="result-control-group">
+                        <label class="scene-selector-label" for="comparison-scene-select">Interaction Scenario</label>
+                        <select id="comparison-scene-select" aria-label="Select interaction scenario">
+                            <option value="double_lift_sloth">Double Lift Sloth</option>
+                            <option value="double_stretch_sloth">Double Stretch Sloth</option>
+                            <option value="single_lift_sloth">Single Lift Sloth</option>
+                            <option value="single_push_sloth">Single Push Sloth</option>
+                            <option value="double_lift_zebra">Double Lift Zebra</option>
+                            <option value="double_stretch_zebra">Double Stretch Zebra</option>
+                            <option value="single_lift_zebra">Single Lift Zebra</option>
+                        </select>
+                    </div>
+                    <span class="view-indicator">Camera View 1</span>
+                </div>
+                <p class="category-description" id="comparison-category-description"></p>
+                <h4 class="scene-current" id="comparison-scene-title"></h4>
+                <div class="comparison-grid" id="comparison-grid"></div>
             </div>
-            <h4 class="scene-current reveal" id="comparison-scene-title"></h4>
-            <div class="comparison-grid reveal" id="comparison-grid"></div>
         </div>
     </div>
 </section>
 
-<!-- ============================== APPLICATIONS ============================== -->
+<!-- ============================== DOWNSTREAM APPLICATIONS ============================== -->
 <section class="page-section section-applications" id="applications">
-    <div class="container-narrow">
-        <h2 class="section-title reveal">Applications</h2>
+    <div class="container-wide">
+        <h2 class="section-title reveal">Downstream Applications</h2>
+        <h3 class="subsection-title reveal">Generalization to Unseen Interactions</h3>
+        <p class="subsection-text application-intro reveal">
+            We apply unseen controller trajectories to digital twins reconstructed from the observed interactions. For each task, PhysTwin and GenTwin are evaluated under the same novel manipulation.
+        </p>
 
-        <div class="results-subsection">
-            <h3 class="subsection-title reveal">Application 1</h3>
-            <div class="app-carousel reveal" id="carousel-application-1">
-                <div class="carousel-row">
-                    <button class="carousel-btn carousel-prev" type="button" aria-label="Previous videos">&#10094;</button>
-                    <div class="carousel-viewport"><div class="carousel-track"></div></div>
-                    <button class="carousel-btn carousel-next" type="button" aria-label="Next videos">&#10095;</button>
-                </div>
-                <div class="carousel-dots"></div>
+        <div class="downstream-carousel reveal" id="new-control-carousel" aria-label="New control point comparisons">
+            <button class="carousel-btn downstream-prev" type="button" aria-label="Previous task">&#10094;</button>
+            <div class="downstream-viewport">
+                <div class="downstream-track"></div>
             </div>
-        </div>
-
-        <div class="results-subsection">
-            <h3 class="subsection-title reveal">Application 2</h3>
-            <div class="app-carousel reveal" id="carousel-application-2">
-                <div class="carousel-row">
-                    <button class="carousel-btn carousel-prev" type="button" aria-label="Previous videos">&#10094;</button>
-                    <div class="carousel-viewport"><div class="carousel-track"></div></div>
-                    <button class="carousel-btn carousel-next" type="button" aria-label="Next videos">&#10095;</button>
-                </div>
-                <div class="carousel-dots"></div>
-            </div>
+            <button class="carousel-btn downstream-next" type="button" aria-label="Next task">&#10095;</button>
+            <div class="carousel-dots downstream-dots" aria-label="Task pages"></div>
         </div>
     </div>
 </section>
-
-<!-- Add ablation, unseen-interaction, supplementary, and BibTeX sections here. -->
 
 <!-- ============================== FOOTER ============================== -->
 <footer class="site-footer">
