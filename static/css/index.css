@@ -14,7 +14,7 @@
     --accent-primary: #176b5b;
     --accent-secondary: #87aa98;
     --accent-warm: #c97864;
-    --gradient-brand: linear-gradient(90deg, #176b5b 0%, #4f8d78 58%, #87aa98 100%);
+    --gradient-brand: linear-gradient(90deg, #087f76 0%, #67a63f 52%, #c85a54 100%);
     --radius-card: 10px;
     --radius-large: 12px;
     --shadow-soft: 0 2px 10px rgba(17, 24, 39, 0.05);
@@ -1048,7 +1048,7 @@ body.js-enabled .reveal:not(.revealed) {
 .publication-title .title-main {
     font-size: clamp(3.9rem, 10vw, 6.4rem);
     line-height: 0.95;
-    background: linear-gradient(90deg, #f3fbf7 0%, #cfe6da 72%, #efc0b3 100%);
+    background: linear-gradient(90deg, #8bd3a0 5%, #c8e879 48%, #ef9a83 96%);
     -webkit-background-clip: text;
     background-clip: text;
 }
