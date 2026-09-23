@@ -368,53 +368,6 @@ function renderSelectedScene() {
     });
 
     synchronizeVideoGroup(grid, grid.querySelectorAll("video"));
-    updateComparisonPlaybackControl(false);
-}
-
-function updateComparisonPlaybackControl(isPaused) {
-    var button = document.getElementById("comparison-play-toggle");
-    if (!button) { return; }
-    var icon = button.querySelector(".playback-icon");
-    var label = button.querySelector(".playback-label");
-    if (icon) { icon.innerHTML = isPaused ? "&#9654;" : "&#10074;&#10074;"; }
-    if (label) { label.textContent = isPaused ? "Play" : "Pause"; }
-    button.setAttribute("aria-label", (isPaused ? "Play" : "Pause") + " synchronized comparison");
-    button.dataset.paused = isPaused ? "true" : "false";
-}
-
-function initComparisonPlaybackControls() {
-    var grid = document.getElementById("comparison-grid");
-    var toggle = document.getElementById("comparison-play-toggle");
-    var replay = document.getElementById("comparison-replay");
-    if (!grid || !toggle || !replay) { return; }
-
-    toggle.addEventListener("click", function () {
-        var videos = Array.prototype.slice.call(grid.querySelectorAll("video"));
-        var shouldPlay = toggle.dataset.paused === "true";
-        var referenceTime = videos.length ? videos[0].currentTime : 0;
-        videos.forEach(function (video) {
-            if (shouldPlay) {
-                if (Math.abs(video.currentTime - referenceTime) > 0.02) {
-                    video.currentTime = referenceTime;
-                }
-                var promise = video.play();
-                if (promise && typeof promise.catch === "function") { promise.catch(function () {}); }
-            } else {
-                video.pause();
-            }
-        });
-        updateComparisonPlaybackControl(!shouldPlay);
-    });
-
-    replay.addEventListener("click", function () {
-        var videos = Array.prototype.slice.call(grid.querySelectorAll("video"));
-        videos.forEach(function (video) {
-            try { video.currentTime = 0; } catch (error) {}
-            var promise = video.play();
-            if (promise && typeof promise.catch === "function") { promise.catch(function () {}); }
-        });
-        updateComparisonPlaybackControl(false);
-    });
 }
 
 function initResultBrowser() {
@@ -682,7 +635,6 @@ function setupNavigationFeedback() {
 function init() {
     buildAppCarousels();
     initResultBrowser();
-    initComparisonPlaybackControls();
     buildDownstreamCarousel();
     buildDataGenerationCarousel();
     observeVideos();
