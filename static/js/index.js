@@ -27,7 +27,7 @@ var resultCategories = {
         label: "Articulated",
         description: "Self-captured drawers and folding cases with constrained rigid-part motion.",
         scenes: [
-            "double_close_drawer_10", "double_close_drawer_11", "single_fold_case_03",
+            "double_close_drawer_11", "single_fold_case_03",
             "single_fold_case_08", "single_fold_case_09"
         ],
         methods: [
@@ -88,11 +88,91 @@ function createVideoElement(src) {
     video.dataset.src = src;
     video.muted = true;
     video.setAttribute("muted", "");
-    video.setAttribute("autoplay", "");
-    video.setAttribute("loop", "");
     video.setAttribute("playsinline", "");
-    video.setAttribute("preload", "metadata");
+    video.setAttribute("preload", "auto");
     return video;
+}
+
+function loadVideo(video) {
+    if (!video.getAttribute("src") && video.dataset.src) {
+        video.src = video.dataset.src;
+        video.load();
+    }
+}
+
+function waitForVideo(video) {
+    loadVideo(video);
+    if (video.readyState >= 3) { return Promise.resolve(); }
+    return new Promise(function (resolve) {
+        var settled = false;
+        function finish() {
+            if (settled) { return; }
+            settled = true;
+            video.removeEventListener("canplay", finish);
+            video.removeEventListener("error", finish);
+            resolve();
+        }
+        video.addEventListener("canplay", finish, { once: true });
+        video.addEventListener("error", finish, { once: true });
+    });
+}
+
+function playVideoGroup(owner, token, videos) {
+    if (owner._syncToken !== token) { return; }
+    videos.forEach(function (video) {
+        try { video.currentTime = 0; } catch (error) {}
+    });
+    window.requestAnimationFrame(function () {
+        if (owner._syncToken !== token) { return; }
+        videos.forEach(function (video) {
+            var promise = video.play();
+            if (promise && typeof promise.catch === "function") {
+                promise.catch(function () {});
+            }
+        });
+    });
+}
+
+function synchronizeVideoGroup(owner, videos) {
+    videos = Array.prototype.slice.call(videos).filter(Boolean);
+    owner._syncToken = (owner._syncToken || 0) + 1;
+    var token = owner._syncToken;
+
+    videos.forEach(function (video) {
+        video.pause();
+        loadVideo(video);
+    });
+    if (!videos.length) { return; }
+
+    Promise.all(videos.map(waitForVideo)).then(function () {
+        if (owner._syncToken !== token) { return; }
+        playVideoGroup(owner, token, videos);
+
+        var master = videos[0];
+        var lastCorrection = 0;
+        function maintainSync(timestamp) {
+            if (owner._syncToken !== token) { return; }
+
+            var durations = videos.map(function (video) { return video.duration; })
+                .filter(function (duration) { return Number.isFinite(duration) && duration > 0; });
+            var sharedDuration = durations.length ? Math.min.apply(Math, durations) : 0;
+
+            if (sharedDuration && master.currentTime >= sharedDuration - 0.05) {
+                videos.forEach(function (video) { video.pause(); });
+                playVideoGroup(owner, token, videos);
+                lastCorrection = timestamp;
+            } else if (!master.paused && timestamp - lastCorrection > 250) {
+                videos.slice(1).forEach(function (video) {
+                    if (Math.abs(video.currentTime - master.currentTime) > 0.06) {
+                        video.currentTime = master.currentTime;
+                    }
+                });
+                lastCorrection = timestamp;
+            }
+            window.requestAnimationFrame(maintainSync);
+        }
+        window.requestAnimationFrame(maintainSync);
+    });
 }
 
 function createVideoCard(src, caption) {
@@ -125,22 +205,17 @@ function appPageCount(root) {
 }
 
 function activateAppVideos(root, start, end) {
+    var activeVideos = [];
     Array.prototype.forEach.call(root.querySelectorAll(".carousel-slide"), function (slide, i) {
         var video = slide.querySelector("video");
         if (!video) { return; }
         if (i >= start && i < end) {
-            if (!video.getAttribute("src") && video.dataset.src) {
-                video.src = video.dataset.src;
-                video.load();
-            }
-            var playPromise = video.play();
-            if (playPromise && typeof playPromise.catch === "function") {
-                playPromise.catch(function () {});
-            }
+            activeVideos.push(video);
         } else {
             video.pause();
         }
     });
+    synchronizeVideoGroup(root, activeVideos);
 }
 
 function renderAppDots(root) {
@@ -290,7 +365,7 @@ function renderSelectedScene() {
         grid.appendChild(createComparisonCard(method, sceneId));
     });
 
-    observeVideos(grid);
+    synchronizeVideoGroup(grid, grid.querySelectorAll("video"));
 }
 
 function initResultBrowser() {
@@ -325,22 +400,17 @@ function activateDownstreamSlide(root) {
     var track = root.querySelector(".downstream-track");
     track.style.transform = "translateX(-" + (root._index * 100) + "%)";
 
+    var activeVideos = [];
     Array.prototype.forEach.call(slides, function (slide, index) {
         Array.prototype.forEach.call(slide.querySelectorAll("video"), function (video) {
             if (index === root._index) {
-                if (!video.getAttribute("src") && video.dataset.src) {
-                    video.src = video.dataset.src;
-                    video.load();
-                }
-                var playPromise = video.play();
-                if (playPromise && typeof playPromise.catch === "function") {
-                    playPromise.catch(function () {});
-                }
+                activeVideos.push(video);
             } else {
                 video.pause();
             }
         });
     });
+    synchronizeVideoGroup(root, activeVideos);
 
     Array.prototype.forEach.call(root.querySelectorAll(".carousel-dot"), function (dot, index) {
         dot.classList.toggle("active", index === root._index);
@@ -462,16 +532,7 @@ function observeVideos(root) {
         entries.forEach(function (entry) {
             var video = entry.target;
             if (entry.isIntersecting) {
-                if (!video.getAttribute("src") && video.dataset.src) {
-                    video.src = video.dataset.src;
-                    video.load();
-                }
-                var playPromise = video.play();
-                if (playPromise && typeof playPromise.catch === "function") {
-                    playPromise.catch(function () {});
-                }
-            } else {
-                video.pause();
+                loadVideo(video);
             }
         });
     }, { rootMargin: "240px 0px", threshold: 0.05 });
