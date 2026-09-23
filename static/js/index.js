@@ -68,8 +68,7 @@ var newControlPointTasks = [
 
 var dataGenerationTasks = [
     { id: "duster_case09_gen", label: "Duster + Case 09" },
-    { id: "card_drawer11_gen", label: "Card + Drawer 11" },
-    { id: "zebra_case08_gen", label: "Zebra + Case 08" }
+    { id: "card_drawer11_gen", label: "Card + Drawer 11" }
 ];
 
 function emptyState(message) {
