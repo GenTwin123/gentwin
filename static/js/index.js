@@ -329,6 +329,8 @@ function createComparisonCard(method, sceneId) {
     card.appendChild(header);
 
     var video = createVideoElement(resultVideoPath(method, sceneId));
+    video.defaultPlaybackRate = 0.9;
+    video.playbackRate = 0.9;
     video.addEventListener("error", function () { card.classList.add("video-unavailable"); });
     card.appendChild(video);
     return card;
